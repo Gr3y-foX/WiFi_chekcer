@@ -1,0 +1,32 @@
+{
+  "name": "wifi-vulnerability-scanner",
+  "version": "1.0.0",
+  "description": "A WiFi vulnerability scanner application for macOS and mobile devices.",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "react-native start",
+    "build": "react-native build",
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-native": "^0.64.2"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6",
+    "babel-jest": "^27.0.6",
+    "babel-preset-react-native": "^4.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/wifi-vulnerability-scanner.git"
+  },
+  "keywords": [
+    "wifi",
+    "scanner",
+    "vulnerability",
+    "security"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

@@ -1,0 +1,31 @@
+{
+  "name": "WiFi Vulnerability Scanner",
+  "version": "1.0.0",
+  "description": "A cross-platform application for scanning WiFi networks for vulnerabilities.",
+  "main": "src/core/scanner.js",
+  "scripts": {
+    "start": "react-native start",
+    "build": "react-native build",
+    "test": "jest"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-native": "^0.64.0"
+  },
+  "devDependencies": {
+    "jest": "^27.0.6",
+    "babel-jest": "^27.0.6"
+  },
+  "platforms": {
+    "macos": {
+      "adapter": "src/platforms/macos/adapter.js",
+      "systemCalls": "src/platforms/macos/system-calls.js"
+    },
+    "mobile": {
+      "android": "src/platforms/mobile/android/wifi-manager.js",
+      "ios": "src/platforms/mobile/ios/network-extension.js"
+    }
+  },
+  "author": "Your Name",
+  "license": "MIT"
+}
