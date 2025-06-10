@@ -5,162 +5,183 @@
  * and provide actionable recommendations for improving network security.
  */
 
-class Analyzer {
-    constructor(scanResults) {
-        this.scanResults = scanResults; // Store the scan results for analysis
-        this.vulnerabilities = [];
-        this.securityScore = 0;
-        this.recommendations = [];
-    }
-
-    /**
-     * Analyze the collected data and generate a comprehensive security report
-     * 
-     * @returns {Object} Security analysis report with vulnerabilities and recommendations
-     */
-    evaluateSecurity() {
-        console.log("Evaluating network security...");
-        this.vulnerabilities = [];
-
-        // Process each network in scan results
-        Object.values(this.scanResults).forEach(network => {
-            this._analyzeEncryptionSecurity(network);
-            this._analyzeBruteForceProtection(network);
-            // Additional security analysis methods will be added here
+/**
+ * Analyzes security assessment results
+ * 
+ * @param {Object} results - Security assessment results
+ * @returns {Object} Analysis report with vulnerabilities and recommendations
+ */
+function analyzeResults(results) {
+    console.log("Evaluating network security...");
+    const vulnerabilities = [];
+    const recommendations = [];
+    const educationalInsights = [];
+    
+    // Analyze encryption security
+    analyzeEncryptionSecurity(results.network, vulnerabilities, recommendations);
+    
+    // Include brute force simulation educational insights
+    if (results.bruteForceSimulation) {
+        educationalInsights.push({
+            title: "Brute Force Attack Simulation (Educational)",
+            insights: results.bruteForceSimulation.educationalTakeaways,
+            crackTimeEstimate: results.bruteForceSimulation.attackSimulation.estimatedTimeToBreak,
+            feasibilityAssessment: results.bruteForceSimulation.attackSimulation.feasibilityAssessment,
+            visualization: results.bruteForceSimulation.attackSimulation.progressVisualization
         });
-
-        // Calculate overall security score
-        this.securityScore = this._calculateSecurityScore();
-        
-        // Generate consolidated recommendations
-        this.recommendations = this._generateConsolidatedRecommendations();
-
-        return {
-            vulnerabilities: this.vulnerabilities,
-            securityScore: this.securityScore,
-            recommendations: this.recommendations,
-            networks: this.scanResults
-        };
     }
-
-    /**
-     * Analyze encryption security of a network
-     * 
-     * @param {Object} network - Network data with scan results
-     */
-    _analyzeEncryptionSecurity(network) {
-        const { encryption } = network.network;
-
-        // Check for open networks (no encryption)
-        if (!encryption || encryption === "None") {
-            this.vulnerabilities.push({
-                ssid: network.network.ssid,
-                type: 'CRITICAL',
-                issue: 'Open Network (No Encryption)',
-                details: 'This network has no password protection. All traffic can be intercepted.'
-            });
-        }
+    
+    // Add existing vulnerabilities and recommendations
+    if (results.vulnerabilities) {
+        vulnerabilities.push(...results.vulnerabilities);
+    }
+    
+    if (results.recommendations) {
+        recommendations.push(...results.recommendations);
+    }
+    
+    // Add brute force recommendations
+    if (results.bruteForceResults && results.bruteForceResults.bruteForceProtection) {
+        recommendations.push(...results.bruteForceResults.bruteForceProtection.recommendations);
         
-        // Check for outdated encryption
-        if (encryption === "WEP") {
-            this.vulnerabilities.push({
-                ssid: network.network.ssid,
-                type: 'CRITICAL',
-                issue: 'Outdated WEP Encryption',
-                details: 'WEP encryption can be cracked in minutes. Upgrade to WPA2 or WPA3.'
-            });
-        }
-        
-        // Check for old but still somewhat secure encryption
-        if (encryption === "WPA") {
-            this.vulnerabilities.push({
-                ssid: network.network.ssid,
-                type: 'HIGH',
-                issue: 'Outdated WPA Encryption',
-                details: 'WPA has known vulnerabilities. Upgrade to WPA2 or WPA3.'
-            });
+        // Add brute force vulnerabilities if found
+        if (results.bruteForceResults.bruteForceProtection.vulnerabilities) {
+            vulnerabilities.push(...results.bruteForceResults.bruteForceProtection.vulnerabilities);
         }
     }
+    
+    // Calculate overall security score (0-10)
+    const securityScore = calculateSecurityScore(results, vulnerabilities);
+    
+    return {
+        networkName: results.network.ssid,
+        overallScore: securityScore,
+        rating: getSecurityRating(securityScore),
+        vulnerabilities,
+        recommendations: [...new Set(recommendations)], // Remove duplicates
+        educationalInsights,
+        timestamp: new Date().toISOString()
+    };
+}
 
-    /**
-     * Analyze brute force protection of a network
-     * 
-     * @param {Object} network - Network data with scan results
-     */
-    _analyzeBruteForceProtection(network) {
-        // If brute force protection assessment exists
-        if (network.bruteForceProtection) {
-            // Add all vulnerabilities from the brute force assessment
-            network.bruteForceProtection.vulnerabilities.forEach(vuln => {
-                this.vulnerabilities.push({
-                    ssid: network.network.ssid,
-                    type: vuln.severity,
-                    issue: vuln.name,
-                    details: vuln.description
+/**
+ * Analyzes encryption security of a network
+ * 
+ * @param {Object} network - Network data with scan results
+ * @param {Array} vulnerabilities - Array to add vulnerabilities to
+ * @param {Array} recommendations - Array to add recommendations to
+ */
+function analyzeEncryptionSecurity(network, vulnerabilities, recommendations) {
+    const encryption = network.encryption;
+    
+    switch (encryption) {
+        case 'OPEN':
+            vulnerabilities.push({
+                name: 'Open Network (No Encryption)',
+                description: 'Your network is not using any encryption. All data transmitted over this network can be captured and read.',
+                severity: 'HIGH'
+            });
+            recommendations.push('Enable WPA2 or WPA3 encryption on your network immediately');
+            recommendations.push('Set a strong password with at least 12 characters including letters, numbers, and symbols');
+            break;
+            
+        case 'WEP':
+            vulnerabilities.push({
+                name: 'WEP Encryption',
+                description: 'WEP encryption is broken and can be cracked in minutes using readily available tools.',
+                severity: 'HIGH'
+            });
+            recommendations.push('Upgrade to WPA2 or WPA3 encryption immediately');
+            recommendations.push('Replace router if it only supports WEP');
+            break;
+            
+        case 'WPA':
+            vulnerabilities.push({
+                name: 'WPA Encryption (Outdated)',
+                description: 'WPA encryption is outdated and vulnerable to various attacks including TKIP weaknesses.',
+                severity: 'MEDIUM'
+            });
+            recommendations.push('Upgrade to WPA2 or WPA3 encryption');
+            recommendations.push('Use a strong password with at least 12 characters');
+            break;
+            
+        case 'WPA2':
+            // WPA2 is generally good but has some vulnerabilities
+            if (network.signal_level > -60) { // Strong signal extends outside
+                vulnerabilities.push({
+                    name: 'Strong Signal Propagation',
+                    description: 'Your network signal is strong and may extend beyond your physical space, increasing attack surface.',
+                    severity: 'LOW'
                 });
-            });
-        } else {
-            // If brute force assessment wasn't run
-            this.vulnerabilities.push({
-                ssid: network.network.ssid,
-                type: 'UNKNOWN',
-                issue: 'Brute Force Protection Not Assessed',
-                details: 'Could not determine if this network is protected against brute force attacks.'
-            });
-        }
-    }
-    
-    /**
-     * Calculate overall security score based on vulnerabilities
-     * 
-     * @returns {number} Security score from 0-100 (higher is better)
-     */
-    _calculateSecurityScore() {
-        // Start with perfect score
-        let score = 100;
-        
-        // Reduce score based on vulnerability severity
-        this.vulnerabilities.forEach(vuln => {
-            switch(vuln.type) {
-                case 'CRITICAL':
-                    score -= 25;
-                    break;
-                case 'HIGH':
-                    score -= 15;
-                    break;
-                case 'MEDIUM':
-                    score -= 10;
-                    break;
-                case 'LOW':
-                    score -= 5;
-                    break;
-                default:
-                    score -= 2; // Unknown severity
+                recommendations.push('Consider reducing transmit power if your router supports it');
             }
-        });
-        
-        // Ensure score doesn't go below 0
-        return Math.max(0, score);
-    }
-    
-    /**
-     * Generate consolidated list of recommendations
-     * 
-     * @returns {Array} List of unique recommendations
-     */
-    _generateConsolidatedRecommendations() {
-        const allRecommendations = [];
-        
-        // Collect recommendations from all network assessments
-        Object.values(this.scanResults).forEach(network => {
-            if (network.recommendations) {
-                allRecommendations.push(...network.recommendations);
-            }
-        });
-        
-        // Remove duplicates
-        return [...new Set(allRecommendations)];
+            break;
     }
 }
 
-export default Analyzer;
+/**
+ * Calculates overall security score from 0-10
+ * 
+ * @param {Object} results - Assessment results
+ * @param {Array} vulnerabilities - List of vulnerabilities
+ * @returns {string} Security score (0-10)
+ */
+function calculateSecurityScore(results, vulnerabilities) {
+    // Start with a perfect score
+    let score = 10;
+    
+    // Deduct points based on vulnerability severity
+    const highSeverityCount = vulnerabilities.filter(v => v.severity === 'HIGH').length;
+    const mediumSeverityCount = vulnerabilities.filter(v => v.severity === 'MEDIUM').length;
+    const lowSeverityCount = vulnerabilities.filter(v => v.severity === 'LOW').length;
+    
+    // High severity issues have major impact
+    score -= highSeverityCount * 2.5;
+    
+    // Medium severity issues have moderate impact
+    score -= mediumSeverityCount * 1;
+    
+    // Low severity issues have minor impact
+    score -= lowSeverityCount * 0.5;
+    
+    // Encryption type has a significant impact
+    switch (results.network.encryption) {
+        case 'OPEN':
+            score -= 5;
+            break;
+        case 'WEP':
+            score -= 4;
+            break;
+        case 'WPA':
+            score -= 2;
+            break;
+        case 'WPA2':
+            // No deduction
+            break;
+        case 'WPA3':
+            // Bonus for using the best security
+            score += 0.5;
+            break;
+    }
+    
+    // Cap the score between 0 and 10
+    return Math.max(0, Math.min(10, score)).toFixed(1);
+}
+
+/**
+ * Gets a text rating based on the security score
+ * 
+ * @param {number} score - Security score
+ * @returns {string} Rating description
+ */
+function getSecurityRating(score) {
+    if (score >= 9) return 'Excellent';
+    if (score >= 7) return 'Good';
+    if (score >= 5) return 'Fair';
+    if (score >= 3) return 'Poor';
+    return 'Critical';
+}
+
+module.exports = {
+    analyzeResults
+};

@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+# Global WiFi Scanner Launcher Script
+# This script allows launching the WiFi vulnerability scanner from anywhere
+
+# Find the script's directory
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+
+# Text colors
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+YELLOW="\033[0;33m"
+BLUE="\033[0;34m"
+RESET="\033[0m"
+
+# Display header
+function show_header() {
+  echo -e "${BLUE}"
+  echo "╔═══════════════════════════════════════════════════════╗"
+  echo "║               WiFi VULNERABILITY SCANNER              ║"
+  echo "╚═══════════════════════════════════════════════════════╝"
+  echo -e "${RESET}"
+}
+
+# Show help information
+function show_help() {
+  echo "Usage: wifi-scanner [OPTION]"
+  echo ""
+  echo "Options:"
+  echo "  start       Run the full WiFi vulnerability scanner"
+  echo "  demo        Run the interactive demo"
+  echo "  quick       Run the quick demo focusing on brute force protection"
+  echo "  help        Show this help information"
+  echo ""
+  echo "Example: wifi-scanner demo"
+}
+
+# Check if project directory exists
+if [ ! -d "$PROJECT_DIR" ]; then
+  echo -e "${RED}Error: WiFi scanner project directory not found.${RESET}"
+  exit 1
+fi
+
+# Change to project directory
+cd "$PROJECT_DIR"
+
+# Process command line arguments
+if [ $# -eq 0 ]; then
+  # No arguments, show menu
+  show_header
+  echo "Please select an option:"
+  echo -e "${BLUE}1) ${RESET}Run full scanner"
+  echo -e "${BLUE}2) ${RESET}Run interactive demo"
+  echo -e "${BLUE}3) ${RESET}Run quick demo"
+  echo -e "${BLUE}h) ${RESET}Help"
+  echo -e "${BLUE}q) ${RESET}Quit"
+  echo ""
+  read -p "Enter your choice: " CHOICE
+  
+  case "$CHOICE" in
+    1)
+      npm start
+      ;;
+    2)
+      npm run demo
+      ;;
+    3)
+      npm run quick-demo
+      ;;
+    h|H)
+      show_help
+      ;;
+    q|Q)
+      exit 0
+      ;;
+    *)
+      echo -e "${RED}Invalid option. Try 'wifi-scanner help' for more information.${RESET}"
+      exit 1
+      ;;
+  esac
+else
+  # Process argument
+  case "$1" in
+    start)
+      npm start
+      ;;
+    demo)
+      npm run demo
+      ;;
+    quick)
+      npm run quick-demo
+      ;;
+    help)
+      show_help
+      ;;
+    *)
+      echo -e "${RED}Unknown option: $1${RESET}"
+      echo "Try 'wifi-scanner help' for more information."
+      exit 1
+      ;;
+  esac
+fi
+
+exit 0

@@ -1,23 +1,39 @@
-// This file serves as an adapter for macOS-specific functionalities.
-// It exports functions to interact with the macOS networking APIs.
+/**
+ * macOS Platform Adapter
+ * 
+ * Provides macOS-specific functionality for WiFi scanning and analysis.
+ * Uses macOS command line tools and APIs to gather network information.
+ */
 
 const { exec } = require('child_process');
+const util = require('util');
+const execAsync = util.promisify(exec);
+const utils = require('../../core/utils');
 
-// Function to scan for available WiFi networks
-function scanNetworks() {
-    return new Promise((resolve, reject) => {
-        exec('airport -s', (error, stdout, stderr) => {
-            if (error) {
-                reject(`Error scanning networks: ${stderr}`);
-                return;
-            }
-            const networks = parseScanResults(stdout);
-            resolve(networks);
-        });
-    });
+/**
+ * Scan for WiFi networks using macOS tools
+ * Note: This requires the airport utility to be accessible
+ * 
+ * @returns {Promise<Array>} - List of detected networks
+ */
+async function scanNetworks() {
+    try {
+        // The airport utility is typically at /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport
+        // For educational purposes, we'll use a simple format
+        const { stdout } = await execAsync('/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -s');
+        return parseScanResults(stdout);
+    } catch (error) {
+        console.error('Error scanning networks with macOS tools:', error);
+        throw new Error('Failed to scan networks. This may require administrator privileges.');
+    }
 }
 
-// Function to parse the scan results from the command line output
+/**
+ * Parse the output from the airport command
+ * 
+ * @param {string} output - Output from the airport scan command
+ * @returns {Array} - Parsed network list
+ */
 function parseScanResults(output) {
     const lines = output.trim().split('\n');
     const networks = lines.slice(1).map(line => {

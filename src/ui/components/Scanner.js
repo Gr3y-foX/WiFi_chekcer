@@ -1,19 +1,52 @@
-import React, { useState } from 'react';
-import { View, Button, Text, StyleSheet } from 'react-native';
-import { Scanner } from '../../core/scanner'; // Importing the Scanner class from core
-import { Analyzer } from '../../core/analyzer'; // Importing the Analyzer class from core
+/**
+ * WiFi Scanner Component - Command-line interface module
+ * 
+ * Provides functions to create interactive CLI for scanning WiFi networks.
+ * Uses various utilities to format output and process user input.
+ */
 
-const ScannerComponent = () => {
-    const [scanning, setScanning] = useState(false);
-    const [results, setResults] = useState(null);
+const chalk = require('chalk');
+const readline = require('readline');
+const scanner = require('../../core/scanner');
+const utils = require('../../core/utils');
 
-    const handleScan = async () => {
-        setScanning(true);
-        const scanner = new Scanner(); // Create an instance of the Scanner class
-        const scanResults = await scanner.initiateScan(); // Initiate the scan
-        const analyzer = new Analyzer(); // Create an instance of the Analyzer class
-        const vulnerabilities = analyzer.evaluate(scanResults); // Analyze the results for vulnerabilities
-        setResults(vulnerabilities); // Set the results state
+/**
+ * Creates a spinning animation for CLI
+ * @returns {Object} Spinner object with start, stop, and update methods
+ */
+function createSpinner(initialText = 'Processing...') {
+    const spinnerFrames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+    let frameIndex = 0;
+    let text = initialText;
+    let intervalId = null;
+
+    return {
+        start: () => {
+            if (intervalId) return;
+            
+            process.stdout.write('\x1B[?25l'); // Hide cursor
+            intervalId = setInterval(() => {
+                process.stdout.write(`\r${chalk.cyan(spinnerFrames[frameIndex])} ${text}`);
+                frameIndex = (frameIndex + 1) % spinnerFrames.length;
+            }, 80);
+            
+            return intervalId;
+        },
+        
+        stop: () => {
+            if (!intervalId) return;
+            
+            clearInterval(intervalId);
+            intervalId = null;
+            process.stdout.write('\r\x1B[K'); // Clear line
+            process.stdout.write('\x1B[?25h'); // Show cursor
+        },
+        
+        update: (newText) => {
+            text = newText;
+        }
+    };
+}
         setScanning(false);
     };
 
