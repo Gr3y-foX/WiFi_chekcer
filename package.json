@@ -15,7 +15,10 @@
     "ubuntu-test": "./test-ubuntu.sh",
     "ubuntu-validate": "./validate-ubuntu.sh",
     "linux-launcher": "./bin/wifi-scanner-linux.sh",
-    "platform-test": "node test-platform.js"
+    "platform-test": "node test-platform.js",
+    "bruteforce-demo": "node enhanced-bruteforce-demo.js",
+    "advanced-demo": "node advanced-integration-demo.js",
+    "integration-test": "node integration-test.js"
   },
   "dependencies": {
     "chalk": "^4.1.2",

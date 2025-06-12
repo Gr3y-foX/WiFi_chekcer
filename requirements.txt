@@ -1,0 +1,14 @@
+# Python Requirements for WiFi Security Testing Suite
+# Install with: pip3 install -r requirements.txt
+
+# Essential for colored terminal output
+colorama>=0.4.4
+
+# Optional but recommended for enhanced functionality
+psutil>=5.8.0          # System and process monitoring
+netifaces>=0.11.0      # Network interface information
+scapy>=2.4.5          # Advanced packet manipulation (Linux only)
+
+# Development and testing
+pytest>=6.2.0         # For Python unit tests
+pytest-cov>=2.12.0    # Coverage reporting

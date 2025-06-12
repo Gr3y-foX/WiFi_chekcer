@@ -6,15 +6,16 @@ The WiFi Vulnerability Scanner is an educational tool designed to scan WiFi netw
 > **⚠️ DISCLAIMER**: This tool is for educational purposes only. Only use it on networks you own or have explicit permission to test. Unauthorized network scanning may be illegal in many jurisdictions.
 
 ## Features
-- Scans available WiFi networks and identifies vulnerabilities
-- Detects weak encryption protocols (WEP, unsecured networks)
-- Identifies brute force protection vulnerabilities
-- Tests for common default credentials
-- Checks for outdated firmware with known security issues
-- Analyzes router configuration for security gaps
-- Provides detailed reports with security scores
-- Offers actionable recommendations to improve security
-- Supports macOS and Linux (mobile support planned)
+- **Educational WiFi Scanning**: Safe, cross-platform network discovery and analysis
+- **Brute Force Protection Assessment**: Comprehensive password security evaluation
+- **Advanced Security Testing**: Python + aircrack-ng integration for professional testing (Linux only)
+- **Cross-Platform Support**: Works on macOS, Linux, and Windows
+- **Intelligent Password Analysis**: Enhanced password complexity and common password detection
+- **Legal Compliance Framework**: Built-in safeguards and consent mechanisms
+- **Professional Integration**: Bridge between educational and advanced security testing
+- **Comprehensive Documentation**: Complete guides for all skill levels
+- **Automated Testing**: Integration test suite for validation
+- **Ubuntu Optimization**: Specialized Linux support with multiple WiFi tools
 
 ## Installation
 
@@ -63,18 +64,34 @@ sudo ln -sf /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Curr
 
 ## Usage
 
-### Local Usage
-Run the scanner from the project directory:
-
+### Educational Mode (All Platforms)
 ```bash
-# Basic scan
+# Basic WiFi scanning and analysis
 npm start
 
-# Interactive demo
+# Interactive educational demo
 npm run demo
 
 # Quick demo focusing on brute force protection
 npm run quick-demo
+
+# Enhanced brute force protection demonstration
+npm run bruteforce-demo
+
+# Ubuntu-specific features (Linux)
+npm run ubuntu-demo
+```
+
+### Advanced Integration Mode
+```bash
+# Advanced WiFi security testing demonstration
+npm run advanced-demo
+
+# Python-Node.js integration testing
+npm run integration-test
+
+# Linux-specific advanced features (requires aircrack-ng)
+sudo python3 wifi_bruteforce_enhanced.py --integration
 ```
 
 ### Home Directory Setup
@@ -172,6 +189,40 @@ npm start -- --output scan-results.json
 # Scan a specific network (if in range)
 npm start -- --ssid "YourNetworkName"
 ```
+
+## Python Integration
+
+### Advanced WiFi Security Testing
+The scanner now includes integration with Python-based aircrack-ng tools for professional security testing:
+
+```bash
+# Check system compatibility for advanced testing
+python3 wifi_bruteforce_enhanced.py --check-only --integration
+
+# Advanced testing demonstration (Linux + root required)
+sudo npm run advanced-demo
+
+# Direct advanced testing (experienced users only)
+sudo python3 wifi_bruteforce_enhanced.py
+```
+
+### Python Dependencies
+```bash
+# Install Python requirements
+pip3 install -r requirements.txt
+
+# Essential dependencies
+pip3 install colorama psutil netifaces
+```
+
+### Linux Advanced Features
+On Linux systems with aircrack-ng installed:
+- **Monitor Mode WiFi**: Real wireless interface monitoring
+- **WPA Handshake Capture**: Professional security assessment
+- **Dictionary Attacks**: Password security testing
+- **Professional Reporting**: Detailed security analysis
+
+> **⚠️ LEGAL WARNING**: Advanced features are for authorized security testing only. Only use on networks you own or have explicit written permission to test.
 
 ## Security Aspects Analyzed
 

@@ -53,6 +53,13 @@ async function runNonInteractiveDemo() {
         for (const scenario of scenarios) {
             console.log(chalk.yellow(`\nScenario: ${scenario.label} (${scenario.encryption}, ${scenario.length} characters, ${scenario.complexity} complexity)`));
             
+            // Use enhanced assessment for more realistic results
+            const enhancedAssessment = bruteForceProtection.enhancedPasswordStrengthAssessment(
+                targetNetwork.ssid,
+                { encryption: scenario.encryption },
+                { vendor: 'Generic' }
+            );
+            
             const simulation = bruteForceProtection.simulateBruteForceAttack(
                 scenario.encryption, 
                 {
@@ -61,10 +68,17 @@ async function runNonInteractiveDemo() {
                 }
             );
             
-            console.log(`Combinations: ${simulation.passwordMetrics.possibleCombinations}`);
-            console.log(`Crack time: ${simulation.attackSimulation.estimatedTimeToBreak}`);
-            console.log(`Assessment: ${simulation.attackSimulation.feasibilityAssessment}`);
+            console.log(`Dictionary passwords tested: ${enhancedAssessment.dictionaryResults.testedPasswords}`);
+            console.log(`Generated passwords: ${enhancedAssessment.generatedPasswordResults.generatedPasswords}`);
+            console.log(`Realistic crack time: ${enhancedAssessment.estimatedCrackTime}`);
+            console.log(`Risk level: ${enhancedAssessment.riskLevel}`);
+            console.log(`Classic simulation: ${simulation.attackSimulation.estimatedTimeToBreak}`);
             console.log(`Progress after 1 hour: ${simulation.attackSimulation.progressVisualization}`);
+            
+            // Show potential vulnerabilities
+            if (enhancedAssessment.dictionaryResults.potentialMatches.length > 0) {
+                console.log(chalk.red(`   ⚠️  Found ${enhancedAssessment.dictionaryResults.potentialMatches.length} potential password vulnerabilities`));
+            }
         }
         
         // Run full security assessment with medium complexity password
