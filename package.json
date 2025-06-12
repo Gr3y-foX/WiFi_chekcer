@@ -1,17 +1,26 @@
 {
   "name": "wifi-vulnerability-scanner",
   "version": "1.0.0",
-  "description": "A WiFi vulnerability scanner application for macOS and mobile devices.",
+  "description": "A WiFi vulnerability scanner application for Linux, macOS and mobile devices with educational security demonstrations.",
   "main": "src/index.js",
+  "bin": {
+    "wifi-scanner": "./bin/wifi-scanner"
+  },
   "scripts": {
     "start": "node src/index.js",
-    "test": "jest"
+    "test": "jest",
+    "demo": "node demo.js",
+    "quick-demo": "node quick-demo.js",
+    "ubuntu-demo": "node ubuntu-demo.js",
+    "ubuntu-test": "./test-ubuntu.sh",
+    "ubuntu-validate": "./validate-ubuntu.sh",
+    "linux-launcher": "./bin/wifi-scanner-linux.sh",
+    "platform-test": "node test-platform.js"
   },
   "dependencies": {
     "chalk": "^4.1.2",
-    "inquirer": "^8.2.6",
-    "node-wifi": "^2.0.16",
-    "readline": "^1.3.0"
+    "inquirer": "^8.2.5",
+    "node-wifi": "^2.0.16"
   },
   "devDependencies": {
     "jest": "^27.0.6"

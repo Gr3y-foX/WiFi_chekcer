@@ -1,4 +1,4 @@
-# WiFi Vulnerability Scanner
+npm run ubuntu-demo# WiFi Vulnerability Scanner
 
 ## Overview
 The WiFi Vulnerability Scanner is an educational tool designed to scan WiFi networks for potential vulnerabilities. It provides users with insights into the security of their networks and offers recommendations for improving security.
@@ -21,23 +21,43 @@ The WiFi Vulnerability Scanner is an educational tool designed to scan WiFi netw
 ### Prerequisites
 - Node.js (v12 or higher)
 - npm (v6 or higher)
-- macOS or Linux operating system
-- Administrator privileges (required for scanning)
+- Linux (Ubuntu 18.04+), macOS, or compatible system
+- Administrator privileges (may be required for some scanning operations)
 
-### Setup
-1. Clone the repository:
+### Automated Setup
+Run the setup script for your platform:
 ```bash
+./setup.sh
+```
+
+### Manual Setup
+
+#### Ubuntu/Debian Linux
+```bash
+# Install system dependencies
+sudo apt update
+sudo apt install -y nodejs npm wireless-tools iw network-manager
+
+# Clone and install
 git clone https://github.com/yourusername/wifi-vulnerability-scanner.git
 cd wifi-vulnerability-scanner
-```
-
-2. Install dependencies:
-```bash
 npm install
+
+# Add user to netdev group for network access
+sudo usermod -a -G netdev $USER
 ```
 
-3. Prepare permissions (macOS):
+#### macOS
 ```bash
+# Install dependencies
+brew install node
+
+# Clone and install
+git clone https://github.com/yourusername/wifi-vulnerability-scanner.git
+cd wifi-vulnerability-scanner
+npm install
+
+# Set up airport utility
 sudo ln -sf /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport /usr/local/bin/airport
 ```
 

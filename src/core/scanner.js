@@ -6,6 +6,40 @@
  */
 
 const bruteForceProtection = require('./brute-force-protection');
+const os = require('os');
+
+// Platform-specific adapters
+let platformAdapter = null;
+
+/**
+ * Get the appropriate platform adapter based on the operating system
+ * 
+ * @returns {Object} Platform-specific adapter
+ */
+function getPlatformAdapter() {
+    if (platformAdapter) {
+        return platformAdapter;
+    }
+    
+    const platform = os.platform();
+    
+    try {
+        if (platform === 'darwin') {
+            platformAdapter = require('../platforms/macos/adapter');
+        } else if (platform === 'linux') {
+            platformAdapter = require('../platforms/linux/adapter');
+        } else {
+            console.warn(`Unsupported platform: ${platform}. Using simulation mode.`);
+            platformAdapter = { scanNetworks: mockScan };
+        }
+    } catch (error) {
+        console.warn(`Failed to load platform adapter for ${platform}:`, error.message);
+        console.log('Using simulation mode instead.');
+        platformAdapter = { scanNetworks: mockScan };
+    }
+    
+    return platformAdapter;
+}
 
 /**
  * Scans for available WiFi networks
@@ -13,12 +47,24 @@ const bruteForceProtection = require('./brute-force-protection');
  * @returns {Promise<Array>} List of detected WiFi networks
  */
 async function scanNetworks() {
-    console.log('Scanning for nearby WiFi networks (simulated)...');
-    // In a real implementation, we would scan actual networks
-    // For educational purposes, we return mock data
+    const platform = os.platform();
+    console.log(`Scanning for nearby WiFi networks on ${platform}...`);
     
     try {
-        return await mockScan();
+        const adapter = getPlatformAdapter();
+        
+        // Try real platform scanning first
+        if (adapter.scanNetworks && adapter.scanNetworks !== mockScan) {
+            try {
+                return await adapter.scanNetworks();
+            } catch (platformError) {
+                console.warn(`Platform scanning failed: ${platformError.message}`);
+                console.log('Falling back to simulation mode...');
+                return await mockScan();
+            }
+        } else {
+            return await mockScan();
+        }
     } catch (error) {
         console.error('Error scanning networks:', error);
         throw new Error(`Network scan failed: ${error.message}`);

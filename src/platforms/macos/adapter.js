@@ -8,7 +8,6 @@
 const { exec } = require('child_process');
 const util = require('util');
 const execAsync = util.promisify(exec);
-const utils = require('../../core/utils');
 
 /**
  * Scan for WiFi networks using macOS tools

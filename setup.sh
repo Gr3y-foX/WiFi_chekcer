@@ -105,11 +105,31 @@ elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     
     # Install wireless tools and nmap
     echo -e "${YELLOW}Installing required packages...${RESET}"
-    sudo $INSTALL_CMD wireless-tools nmap
+    if [[ "$PKG_MANAGER" == "apt" ]]; then
+        # Ubuntu/Debian specific packages
+        sudo $INSTALL_CMD wireless-tools iw network-manager nmap net-tools
+        
+        # Install additional useful packages for Ubuntu
+        sudo $INSTALL_CMD curl wget git
+        
+        echo -e "${GREEN}Ubuntu packages installed successfully.${RESET}"
+    else
+        sudo $INSTALL_CMD wireless-tools nmap
+    fi
     
     # Set up permissions for network scanning
     echo -e "${BLUE}Setting up network scanning permissions...${RESET}"
-    echo "Note: You may need to run the WiFi scanner with sudo privileges."
+    
+    # Check if user is in netdev group (Ubuntu/Debian)
+    if groups | grep -q netdev; then
+        echo -e "${GREEN}User is already in netdev group.${RESET}"
+    else
+        echo -e "${YELLOW}Adding user to netdev group for network access...${RESET}"
+        sudo usermod -a -G netdev $USER
+        echo -e "${YELLOW}You may need to log out and back in for group changes to take effect.${RESET}"
+    fi
+    
+    echo "Note: You may need to run the WiFi scanner with sudo privileges for full functionality."
     
 else
     # Unsupported OS
